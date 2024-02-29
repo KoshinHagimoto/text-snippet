@@ -6,6 +6,7 @@ import (
 	"os"
 	"text-snippet/app/object"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
 
@@ -46,8 +47,7 @@ func InitSnippetDAO() (*SnippetDAO, error) {
 		content TEXT NOT NULL,
 		language VARCHAR(255), 
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		expires_at TIMESTAMP NULL, 
-		UNIQUE(unique_string)
+		expires_at TIMESTAMP NULL
 	);
 	`
 
