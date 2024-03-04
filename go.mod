@@ -8,4 +8,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 )
 
-require golang.org/x/crypto v0.20.0 // indirect
+require (
+	github.com/gorilla/csrf v1.7.2 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
+	golang.org/x/crypto v0.20.0 // indirect
+)

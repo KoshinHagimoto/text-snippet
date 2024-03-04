@@ -6,6 +6,7 @@ import (
 	"text-snippet/app/dao"
 	"text-snippet/app/object"
 
+	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,7 +30,10 @@ func RegisterUserHandler(userDao *dao.UserDAO) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		// Set the X-CSRF-Token header
+		csrfToken := csrf.Token(r)
+		w.Header().Set("X-CSRF-Token", csrfToken)
+
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(map[string]string{"message": "user created"})
 	}
