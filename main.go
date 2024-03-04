@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"text-snippet/app/config"
 	"text-snippet/app/dao"
 	handler "text-snippet/app/handlers"
 	"text-snippet/app/middleware"
@@ -10,17 +11,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var snipDao *dao.SnippetDAO
-
 func main() {
 	var err error
-	snipDao, err = dao.InitSnippetDAO()
+	db, err := config.InitDAO()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer snipDao.Finalize()
+	defer db.Close()
 
 	r := mux.NewRouter()
+
+	snipDao := dao.NewSnippetDAO(db)
+	userDao := dao.NewUserDAO(db)
 
 	r.HandleFunc("/snippet", middleware.CORSMiddleware(handler.CreateSnippetHandler(snipDao))).Methods("POST")
 	r.HandleFunc("/snippets", middleware.CORSMiddleware(handler.GetSnippetListHandler(snipDao))).Methods("GET")
