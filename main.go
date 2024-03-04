@@ -26,6 +26,7 @@ func main() {
 
 	r.HandleFunc("/snippet", middleware.CORSMiddleware(handler.CreateSnippetHandler(snipDao))).Methods("POST")
 	r.HandleFunc("/snippets", middleware.CORSMiddleware(handler.GetSnippetListHandler(snipDao))).Methods("GET")
+	r.HandleFunc(("/user/register"), middleware.CORSMiddleware(handler.RegisterUserHandler(userDao))).Methods("POST")
 
 	fs := http.FileServer(http.Dir("./public"))
 	r.PathPrefix("/").Handler(fs)
