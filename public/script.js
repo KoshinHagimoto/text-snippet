@@ -26,7 +26,10 @@ function submitSnippet() {
 
     fetch('/snippet', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
         body: JSON.stringify({
             content,
             language,
@@ -56,10 +59,6 @@ function fetchSnippets() {
     })
     .catch(error => console.error('Error:', error));
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchSnippets();
-});
 
 let csrfToken = "";
 
@@ -115,11 +114,49 @@ function login() {
     .then(data => {
         console.log('Login successful:', data);
         fetchSnippets();
+        window.location.reload(); // ページを再読み込み
     })
     .catch(error => console.error('Error logging in:', error));
 }
 
+function logout() {
+    fetch('/user/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Logged out successfully');
+            checkLoginStatusAndUpdateUI();
+            window.location.reload(); // ページを再読み込み
+        }
+    })
+    .catch(error => console.error('Error logging out:', error));
+}
+
+function checkLoginStatusAndUpdateUI() {
+    fetch('/user/status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('logout-button').style.display = 'block'; // ログアウトボタンを表示
+            document.getElementById('snippet-section').style.display = 'block';
+        } else {
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('logout-button').style.display = 'none'; // ログアウトボタンを非表示
+            document.getElementById('snippet-section').style.display = 'none';
+        }
+    })
+    .catch(error => console.error('Error checking login status:', error));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchCsrfToken();
+    checkLoginStatusAndUpdateUI();
     fetchSnippets();
 });
+
