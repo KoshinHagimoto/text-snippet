@@ -23,9 +23,9 @@ func (dao *UserDAO) CreateUser(user *object.User) error {
 	return nil
 }
 
-func (dao *UserDAO) GetUserByID(id int) (*object.User, error) {
-	query := `SELECT id, username, email, password_hash, created_at, email_verified FROM users WHERE id = ?`
-	row := dao.db.QueryRow(query, id)
+func (dao *UserDAO) GetUserByUsername(username string) (*object.User, error) {
+	query := `SELECT id, username, email, password_hash, created_at, email_verified FROM users WHERE username = ?`
+	row := dao.db.QueryRow(query, username)
 
 	var user object.User
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.EmailVerified)

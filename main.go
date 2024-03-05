@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 func main() {
@@ -29,6 +30,8 @@ func main() {
 	// HTTPSを使用していない場合はcsrf.Secure(false)を設定
 	CSRFMiddleware := csrf.Protect([]byte(CSRFSecret), csrf.Secure(false))
 
+	sessionStore := sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
+
 	r := mux.NewRouter()
 
 	snipDao := dao.NewSnippetDAO(db)
@@ -37,6 +40,7 @@ func main() {
 	r.HandleFunc("/snippet", middleware.CORSMiddleware(handler.CreateSnippetHandler(snipDao))).Methods("POST")
 	r.HandleFunc("/snippets", middleware.CORSMiddleware(handler.GetSnippetListHandler(snipDao))).Methods("GET")
 	r.HandleFunc(("/user/register"), middleware.CORSMiddleware(handler.RegisterUserHandler(userDao))).Methods("POST")
+	r.HandleFunc("/user/login", middleware.CORSMiddleware(handler.LoginUserHandler(userDao, sessionStore))).Methods("POST")
 
 	http.Handle("/", CSRFMiddleware(r))
 
