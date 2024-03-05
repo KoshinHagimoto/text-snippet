@@ -37,13 +37,15 @@ func RegisterUserHandler(userDao *dao.UserDAO) http.HandlerFunc {
 		}
 
 		user.PasswordHash = string(hashedPassword)
-		if err := userDao.CreateUser(&user); err != nil {
+
+		userID, err := userDao.CreateUser(&user)
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		// Email verification
-		verificationURL := config.GenerateSignedURL(user.ID, user.Email)
+		verificationURL := config.GenerateSignedURL(userID, user.Email)
 		config.SendVerificationEmail(user.Email, verificationURL)
 
 		// Set the X-CSRF-Token header

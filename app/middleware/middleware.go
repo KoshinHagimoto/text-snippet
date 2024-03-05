@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,9 +34,18 @@ func VerifySignature(r *http.Request) bool {
 
 	// クエリーから署名を削除し、署名されたコンテンツを再作成する。
 	query.Del("signature")
-	signedContent := query.Encode()
+
+	expiration := query.Get("expiration")
+	id := query.Get("id")
+	user := query.Get("user")
+	signedContent := fmt.Sprintf("expiration=%s&id=%s&user=%s", expiration, id, user)
+	fmt.Println(signedContent)
 
 	secretKey := os.Getenv("SIGNED_URL_SECRET")
+	if secretKey == "" {
+		fmt.Println("SIGNED_URL_SECRET is not set")
+		return false
+	}
 
 	hmacHash := hmac.New(sha256.New, []byte(secretKey))
 	hmacHash.Write([]byte(signedContent))
@@ -47,7 +57,6 @@ func VerifySignature(r *http.Request) bool {
 	}
 
 	// 期限を確認
-	expiration := query.Get("expiration")
 	if expiration == "" {
 		return false
 	}

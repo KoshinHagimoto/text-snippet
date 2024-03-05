@@ -14,13 +14,18 @@ func NewUserDAO(db *sql.DB) *UserDAO {
 	return &UserDAO{db: db}
 }
 
-func (dao *UserDAO) CreateUser(user *object.User) error {
+func (dao *UserDAO) CreateUser(user *object.User) (int, error) {
 	query := `INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)`
-	_, err := dao.db.Exec(query, user.Username, user.Email, user.PasswordHash)
+	result, err := dao.db.Exec(query, user.Username, user.Email, user.PasswordHash)
 	if err != nil {
-		return fmt.Errorf("error creating user: %v", err)
+		return 0, fmt.Errorf("error creating user: %v", err)
 	}
-	return nil
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("error getting last insert ID: %v", err)
+	}
+	return int(id), nil
 }
 
 func (dao *UserDAO) GetUserByUsername(username string) (*object.User, error) {

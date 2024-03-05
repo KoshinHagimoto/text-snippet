@@ -80,18 +80,18 @@ func GenerateSignedURL(userID int, userEmail string) string {
 	userHash.Write([]byte(userEmail))
 	userHashStr := hex.EncodeToString(userHash.Sum(nil))
 
-	unsignedURL := fmt.Sprintf("/verify/email?id=%d&user=%s&expiration=%d", userID, userHashStr, expiration)
+	unsignedURL := fmt.Sprintf("expiration=%d&id=%d&user=%s", expiration, userID, userHashStr)
 	signature := hmac.New(sha256.New, []byte(secretKey))
 	signature.Write([]byte(unsignedURL))
 	signatureStr := hex.EncodeToString(signature.Sum(nil))
 
-	return fmt.Sprintf("%s&signature=%s", unsignedURL, signatureStr)
+	return fmt.Sprintf("http://localhost:8080/verify/email?%s&signature=%s", unsignedURL, signatureStr)
 }
 
 // メールを送信する
 func SendVerificationEmail(userEmail, verificationURL string) {
 	from := os.Getenv("SMTP_FROM")
-	password := os.Getenv("SMTP_PASSWORD")
+	password := os.Getenv("EMAIL_PASSWORD")
 	to := []string{userEmail}
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
