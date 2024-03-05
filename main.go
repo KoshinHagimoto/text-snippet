@@ -50,23 +50,12 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]string{"csrfToken": csrfToken}) // トークンをJSONで返す
 	}).Methods("GET")
 
-	// ユーザーステータスを取得するエンドポイント
-	r.HandleFunc("/user/status", func(w http.ResponseWriter, r *http.Request) {
-		session, err := sessionStore.Get(r, "login-session")
-		if err != nil {
-			http.Error(w, "Session error", http.StatusInternalServerError)
-			return
-		}
-
-		loggedIn := session.Values["user_id"] != nil
-		json.NewEncoder(w).Encode(map[string]bool{"loggedIn": loggedIn})
-	}).Methods("GET")
-
 	r.HandleFunc("/snippet", middleware.CORSMiddleware(handler.CreateSnippetHandler(snipDao))).Methods("POST")
 	r.HandleFunc("/snippets", middleware.CORSMiddleware(handler.GetSnippetListHandler(snipDao))).Methods("GET")
 	r.HandleFunc(("/user/register"), middleware.CORSMiddleware(handler.RegisterUserHandler(userDao))).Methods("POST")
 	r.HandleFunc("/user/login", middleware.CORSMiddleware(handler.LoginUserHandler(userDao, sessionStore))).Methods("POST")
 	r.HandleFunc("/user/logout", middleware.CORSMiddleware(handler.LogoutUserHandler(sessionStore))).Methods("POST")
+	r.HandleFunc("/user/status", middleware.CORSMiddleware(handler.GetUserStatusHandler(sessionStore))).Methods("GET")
 
 	http.Handle("/", CSRFMiddleware(r))
 
