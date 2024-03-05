@@ -6,15 +6,26 @@ import (
 	"text-snippet/app/dao"
 	"text-snippet/app/object"
 
+	"regexp"
+
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// EmailRegex represents the regular expression pattern for email validation
+var EmailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 func RegisterUserHandler(userDao *dao.UserDAO) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user object.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Validate email
+		if !EmailRegex.MatchString(user.Email) {
+			http.Error(w, "Invalid email", http.StatusBadRequest)
 			return
 		}
 

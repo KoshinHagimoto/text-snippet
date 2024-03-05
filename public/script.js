@@ -71,30 +71,6 @@ function fetchCsrfToken() {
     .catch(error => console.error('Error fetching CSRF token:', error));
 }
 
-function register() {
-    const username = document.getElementById('register-username').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-
-    fetch('/user/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify({
-            username,
-            email,
-            password
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Registration successful:', data);
-    })
-    .catch(error => console.error('Error registering:', error));
-}
-
 function login() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
