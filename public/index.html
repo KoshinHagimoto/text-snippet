@@ -8,22 +8,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
 </head>
 <body>
-    <h1>Share Your Snippet</h1>
-    <label for="languageSelector">Select Language:</label>
-    <select id="languageSelector" onchange="changeLanguage()">
-        <option value="javascript">JavaScript</option>
-        <option value="python">Python</option>
-        <option value="java">Java</option>
-        <option value="cpp">C++</option>
-        <!-- 他の言語オプションも追加可能 -->
-    </select>
-    <div id="editor" style="height:400px;"></div>
-    <button onclick="submitSnippet()">Submit Snippet</button>
+    <div id="auth-section">
+        <!-- ログインフォーム -->
+        <div id="login-form">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+        
+        <!-- 新規登録へのリンク -->
+        <p>Or <a href="register.html">register here</a></p>
+    </div>
 
-    <h2>Snippets</h2>
-    <div id="snippets"></div>
+    <div id="snippet-section" style="display: none;">
+        <!-- コード入力と一覧表示 -->
+        <h1>Share Your Snippet</h1>
+        <label for="languageSelector">Select Language:</label>
+        <select id="languageSelector" onchange="changeLanguage()">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+            <!-- 他の言語オプションも追加可能 -->
+        </select>
+        <div id="editor" style="height:400px;"></div>
+        <button onclick="submitSnippet()">Submit Snippet</button>
+
+        <h2>Snippets</h2>
+        <div id="snippets"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>
 </html>
-
