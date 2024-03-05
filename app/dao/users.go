@@ -37,3 +37,12 @@ func (dao *UserDAO) GetUserByUsername(username string) (*object.User, error) {
 	}
 	return &user, nil
 }
+
+func (dao *UserDAO) UpdateEmailVerified(userId int, verified bool) error {
+	query := `UPDATE users SET email_verified = ? WHERE id = ?`
+	_, err := dao.db.Exec(query, verified, userId)
+	if err != nil {
+		return fmt.Errorf("error updating email verified: %v", err)
+	}
+	return nil
+}
