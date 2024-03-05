@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"text-snippet/app/config"
 	"text-snippet/app/dao"
 	"text-snippet/app/object"
 
@@ -40,6 +41,10 @@ func RegisterUserHandler(userDao *dao.UserDAO) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// Email verification
+		verificationURL := config.GenerateSignedURL(user.ID, user.Email)
+		config.SendVerificationEmail(user.Email, verificationURL)
 
 		// Set the X-CSRF-Token header
 		csrfToken := csrf.Token(r)
