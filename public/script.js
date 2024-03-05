@@ -142,13 +142,23 @@ function checkLoginStatusAndUpdateUI() {
     .then(response => response.json())
     .then(data => {
         if (data.loggedIn) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('logout-button').style.display = 'block'; // ログアウトボタンを表示
+            // ログインフォームを非表示
+            document.getElementById('login-form-header').style.display = 'none';
+            // ログアウトボタンを表示
+            document.getElementById('logout-button').style.display = 'block';
+            // スニペットエディター部分を表示
             document.getElementById('snippet-section').style.display = 'block';
+            // 登録リンクを非表示
+            document.getElementById('register-link').style.display = 'none';
         } else {
-            document.getElementById('auth-section').style.display = 'block';
-            document.getElementById('logout-button').style.display = 'none'; // ログアウトボタンを非表示
+            // ログインフォームを表示
+            document.getElementById('login-form-header').style.display = 'block';
+            // ログアウトボタンを非表示
+            document.getElementById('logout-button').style.display = 'none';
+            // スニペットエディター部分を非表示
             document.getElementById('snippet-section').style.display = 'none';
+            // 登録リンクを表示
+            document.getElementById('register-link').style.display = 'block';
         }
     })
     .catch(error => console.error('Error checking login status:', error));

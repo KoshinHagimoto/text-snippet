@@ -8,20 +8,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
 </head>
 <body>
-    <div id="auth-section">
-        <!-- ログインフォーム -->
-        <div id="login-form">
-            <h2>Login</h2>
+    <!-- ヘッダー部分 -->
+    <div id="header">
+        <a href="index.html">Home</a>
+        <div id="login-form-header" style="display: none;">
             <input type="text" id="login-username" placeholder="Username">
             <input type="password" id="login-password" placeholder="Password">
             <button onclick="login()">Login</button>
         </div>
-        
-        <!-- 新規登録へのリンク -->
-        <p>Or <a href="register.html">register here</a></p>
+        <div id="auth-links">
+            <a href="register.html" id="register-link">Register</a>
+            <button id="logout-button" style="display: none;" onclick="logout()">Logout</button>
+        </div>
     </div>
-
-    <button id="logout-button" style="display: none;" onclick="logout()">Logout</button>
 
     <div id="snippet-section" style="display: none;">
         <!-- コード入力と一覧表示 -->
@@ -35,11 +34,10 @@
             <!-- 他の言語オプションも追加可能 -->
         </select>
         <div id="editor" style="height:400px;"></div>
-        <button onclick="submitSnippet()">Submit Snippet</button>
-
-        <h2>Snippets</h2>
-        <div id="snippets"></div>
+        <button id="submit-snippet-button" onclick="submitSnippet()">Submit Snippet</button>
     </div>
+    <h2>Snippets</h2>
+    <div id="snippets"></div>
 
     <script src="script.js"></script>
 </body>
