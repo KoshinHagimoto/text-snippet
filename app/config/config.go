@@ -1,9 +1,14 @@
 package config
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
+	"net/smtp"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -65,4 +70,43 @@ func InitDAO() (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+// 署名付きURLを生成する
+func GenerateSignedURL(userID int, userEmail string) string {
+	secretKey := os.Getenv("SIGNED_URL_SECRET")
+	expiration := time.Now().Add(30 * time.Minute).Unix()
+	userHash := hmac.New(sha256.New, []byte(secretKey))
+	userHash.Write([]byte(userEmail))
+	userHashStr := hex.EncodeToString(userHash.Sum(nil))
+
+	unsignedURL := fmt.Sprintf("expiration=%d&id=%d&user=%s", expiration, userID, userHashStr)
+	signature := hmac.New(sha256.New, []byte(secretKey))
+	signature.Write([]byte(unsignedURL))
+	signatureStr := hex.EncodeToString(signature.Sum(nil))
+
+	return fmt.Sprintf("http://localhost:8080/verify/email?%s&signature=%s", unsignedURL, signatureStr)
+}
+
+// メールを送信する
+func SendVerificationEmail(userEmail, verificationURL string) {
+	from := os.Getenv("SMTP_FROM")
+	password := os.Getenv("EMAIL_PASSWORD")
+	to := []string{userEmail}
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+
+	message := []byte("To: " + userEmail + "\r\n" +
+		"Subject: Email Verification\r\n\r\n" +
+		"Click the link below to verify your email address:\r\n" +
+		verificationURL + "\r\n")
+
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	if err != nil {
+		fmt.Println("error sending email: ", err)
+		return
+	}
+
+	fmt.Println("email sent successfully")
 }
